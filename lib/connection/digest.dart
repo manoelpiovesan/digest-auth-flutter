@@ -13,8 +13,12 @@ class DigestAuth {
   String? password;
   String? method = 'GET';
 
-  DigestAuth(
-      {required this.url, required this.uri, this.username, this.password});
+  DigestAuth({
+    required this.url,
+    required this.uri,
+    this.username,
+    this.password,
+  });
 
   Future<void> get() async {
     /// Fazendo a primeira requisição para capturar o cabeçalho www-authenticate
@@ -31,8 +35,10 @@ class DigestAuth {
         _generateAuthorizationString(response.headers['www-authenticate']!);
 
     /// Fazendo a segunda requisição com o cabeçalho Authorization
-    final http.Response response2 = await client.get(Uri.parse('$url$uri'),
-        headers: <String, String>{'Authorization': authorization});
+    final http.Response response2 = await client.get(
+      Uri.parse('$url$uri'),
+      headers: <String, String>{'Authorization': authorization},
+    );
 
     if (kDebugMode) {
       print('HEADERS RECEBIDO: ${response.headers['www-authenticate']}');
@@ -49,7 +55,8 @@ class DigestAuth {
     final Map<String, String> map = _parseAuthenticateToMap(authenticate);
     final String nc = '1'.padLeft(8, '0');
 
-    /// TODO(manoel): Implementar o nonce como um valor aleatório
+    // TODO(manoel): Implementar o nonce como um valor aleatório.
+
     const String cnonce = '45c1e68d0a40e49f';
     final String a1 = md5Hash("$username:${map['realm']}:$password");
     final String a2 = md5Hash('$method:$uri');
