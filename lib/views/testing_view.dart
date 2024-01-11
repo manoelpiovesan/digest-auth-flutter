@@ -1,5 +1,6 @@
 import 'package:digest_auth/connection/digest.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Testing extends StatefulWidget {
   const Testing({super.key});
@@ -9,7 +10,7 @@ class Testing extends StatefulWidget {
 }
 
 class _TestingState extends State<Testing> {
-  String? response;
+  http.Response? response;
   DigestAuth digest = DigestAuth(
     url: 'http://192.168.180.3',
     uri: '/!dhost.b',
@@ -91,11 +92,27 @@ class _TestingState extends State<Testing> {
                   padding: const EdgeInsets.all(18),
                   child: response == null
                       ? const CircularProgressIndicator()
-                      : Text(
-                          response ?? '',
-                          style: const TextStyle(
-                            fontSize: 18,
-                          ),
+                      : Column(
+                          children: <Widget>[
+                            const Text('Header'),
+                            const Divider(),
+                            Text(
+                              response == null
+                                  ? ''
+                                  : response!.headers.toString(),
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                            const Text('Body'),
+                            const Divider(),
+                            Text(
+                              response == null ? '' : response!.body,
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
                         ),
                 ),
               ),
