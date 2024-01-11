@@ -1,9 +1,11 @@
 import 'dart:convert';
-
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+///
+///
+///
 class DigestAuth {
   String url;
   String uri;
@@ -16,8 +18,8 @@ class DigestAuth {
 
   Future<void> get() async {
     /// Fazendo a primeira requisição para capturar o cabeçalho www-authenticate
-    final client = http.Client();
-    final response = await client.get(Uri.parse("$url$uri"));
+    final http.Client client = http.Client();
+    final http.Response response = await client.get(Uri.parse('$url$uri'));
 
     /// Verificando se há o cabeçalho www-authenticate
     if (!response.headers.keys.contains('www-authenticate')) {
@@ -29,8 +31,8 @@ class DigestAuth {
         _generateAuthorizationString(response.headers['www-authenticate']!);
 
     /// Fazendo a segunda requisição com o cabeçalho Authorization
-    final response2 = await client
-        .get(Uri.parse("$url$uri"), headers: {'Authorization': authorization});
+    final http.Response response2 = await client.get(Uri.parse('$url$uri'),
+        headers: <String, String>{'Authorization': authorization});
 
     if (kDebugMode) {
       print('HEADERS RECEBIDO: ${response.headers['www-authenticate']}');
@@ -45,16 +47,17 @@ class DigestAuth {
   ///
   String _generateAuthorizationString(String authenticate) {
     final Map<String, String> map = _parseAuthenticateToMap(authenticate);
-    String nc = '1'.padLeft(8, '0');
+    final String nc = '1'.padLeft(8, '0');
 
     /// TODO(manoel): Implementar o nonce como um valor aleatório
-    String cnonce = '45c1e68d0a40e49f';
-    var a1 = md5Hash("$username:${map['realm']}:$password");
-    var a2 = md5Hash("$method:$uri");
+    const String cnonce = '45c1e68d0a40e49f';
+    final String a1 = md5Hash("$username:${map['realm']}:$password");
+    final String a2 = md5Hash('$method:$uri');
 
-    var response = md5Hash("$a1:${map['nonce']}:$nc:$cnonce:${map['qop']}:$a2");
+    final String response =
+        md5Hash("$a1:${map['nonce']}:$nc:$cnonce:${map['qop']}:$a2");
 
-    String digestHeaderString =
+    final String digestHeaderString =
         'Digest username="$username", realm="${map['realm']}", nonce="${map['nonce']}", uri="$uri", response="$response", qop=${map['qop']}, nc=$nc, cnonce="$cnonce"';
 
     return digestHeaderString;
@@ -64,7 +67,7 @@ class DigestAuth {
   ///
   ///
   Map<String, String> _parseAuthenticateToMap(String authenticate) {
-    final Map<String, String> map = {};
+    final Map<String, String> map = <String, String>{};
 
     /// Removendo o Digest do cabeçalho
     final String digest = authenticate.substring(7);
@@ -90,9 +93,9 @@ class DigestAuth {
   ///
   ///
   String md5Hash(String data) {
-    var content = const Utf8Encoder().convert(data);
-    var md5 = crypto.md5;
-    var digest = md5.convert(content).toString();
+    final Uint8List content = const Utf8Encoder().convert(data);
+    const crypto.Hash md5 = crypto.md5;
+    final String digest = md5.convert(content).toString();
     return digest;
   }
 }
