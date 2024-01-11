@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class DigestAuth {
@@ -31,10 +32,12 @@ class DigestAuth {
     final response2 = await client
         .get(Uri.parse("$url$uri"), headers: {'Authorization': authorization});
 
-    print('HEADERS RECEBIDO: ${response.headers['www-authenticate']}');
-    print(response2.request);
-    print('Authorization enviado:$authorization');
-    print(response2.body);
+    if (kDebugMode) {
+      print('HEADERS RECEBIDO: ${response.headers['www-authenticate']}');
+      print(response2.request);
+      print('Authorization enviado:$authorization');
+      print(response2.body);
+    }
   }
 
   ///
