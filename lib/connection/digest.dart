@@ -20,7 +20,7 @@ class DigestAuth {
     this.password,
   });
 
-  Future<void> get() async {
+  Future<String> get() async {
     /// Fazendo a primeira requisição para capturar o cabeçalho www-authenticate
     final http.Client client = http.Client();
     final http.Response response = await client.get(Uri.parse('$url$uri'));
@@ -46,6 +46,8 @@ class DigestAuth {
       print('Authorization enviado:$authorization');
       print(response2.body);
     }
+
+    return response2.body;
   }
 
   ///

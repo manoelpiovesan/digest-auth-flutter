@@ -9,6 +9,7 @@ class Testing extends StatefulWidget {
 }
 
 class _TestingState extends State<Testing> {
+  String? response;
   DigestAuth digest = DigestAuth(
     url: 'http://192.168.180.3',
     uri: '/!dhost.b',
@@ -22,15 +23,84 @@ class _TestingState extends State<Testing> {
         title: const Text('Testing'),
       ),
       body: Center(
-        child: Column(
-          children: [
-            TextButton(
-              onPressed: () {
-                digest.get();
-              },
-              child: const Text('Test'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            children: <Widget>[
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Form(
+                    child: Column(
+                      children: <Widget>[
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'URL',
+                          ),
+                          initialValue: digest.url,
+                          onChanged: (String? value) {
+                            digest.url = value!;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'URI / PATH',
+                          ),
+                          initialValue: digest.uri,
+                          onChanged: (String? value) {
+                            digest.uri = value!;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'Username',
+                          ),
+                          initialValue: digest.username,
+                          onChanged: (String? value) {
+                            digest.username = value;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                          ),
+                          obscureText: true,
+                          initialValue: digest.password,
+                          onChanged: (String? value) {
+                            digest.password = value;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () async {
+                            setState(() {
+                              response = null;
+                            });
+                            response = await digest.get();
+                            setState(() {});
+                          },
+                          child: const Text('Enviar requisição'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: response == null
+                      ? const CircularProgressIndicator()
+                      : Text(
+                          response ?? '',
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
