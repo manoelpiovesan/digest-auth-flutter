@@ -1,4 +1,4 @@
-import 'package:digest_auth/connection/views/testing_view.dart';
+import 'package:digest_auth/views/testing_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {
